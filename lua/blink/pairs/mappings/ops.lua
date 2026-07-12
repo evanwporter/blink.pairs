@@ -64,9 +64,8 @@ function ops.on_key(key, rules)
 
       -- Multiple characters
 
-      local index_of_key = rule.opening:find(key)
-      assert(index_of_key ~= nil, 'Key not found in rule (temporary limitation, contributions welcome!)')
-      index_of_key = index_of_key - 1
+      local index_of_key = rule.opening:find(key, 1, true)
+      index_of_key = index_of_key ~= nil and index_of_key - 1 or 0
 
       local opening_prefix = rule.opening:sub(1, index_of_key)
 
