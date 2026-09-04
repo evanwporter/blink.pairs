@@ -1,6 +1,8 @@
 use crate::parser::*;
 use matcher_macros::define_matcher;
 
+// TODO: Does not support arbitrary delimiters: R"tag(contents)tag"
+
 define_matcher!(Cpp {
     delimiters: [
         "(" => ")",
