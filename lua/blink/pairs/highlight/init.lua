@@ -1,6 +1,7 @@
 local nvim = require('blink.lib.nvim')
 
 local highlighter = {}
+local ns = nvim.create_namespace('blink.pairs')
 
 --- @param config blink.pairs.HighlightsConfig
 function highlighter.register(config)
@@ -13,7 +14,6 @@ function highlighter.register(config)
   local get_line_matches = require('blink.pairs.rust').get_line_matches
   local mappings_config = require('blink.pairs.config').mappings
 
-  local ns = config.ns
   local cmdline_enabled = config.cmdline
 
   -- Per-buffer state: tracks which lines have persistent extmarks

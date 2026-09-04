@@ -4,7 +4,6 @@
 --- @field groups string[] | fun(match: blink.pairs.Match): string Highlight groups for matched pairs, in order that they'll appear based on depth, or a function that returns a highlight group for a given match
 --- @field unmatched_group string Highlight group for unmatched pairs
 --- @field priority number
---- @field ns integer
 --- @field matchparen blink.pairs.MatchparenConfig
 
 --- @class (exact) blink.pairs.MatchparenConfig
@@ -21,7 +20,6 @@ return {
   groups = { { 'BlinkPairsOrange', 'BlinkPairsPurple', 'BlinkPairsBlue' }, types.list('string') },
   unmatched_group = { 'BlinkPairsUnmatched', 'string' },
   priority = { 200, 'number' },
-  ns = { vim.api.nvim_create_namespace('blink.pairs'), 'number' },
   matchparen = {
     enabled = { true, 'boolean' },
     cmdline = { false, 'boolean' },
