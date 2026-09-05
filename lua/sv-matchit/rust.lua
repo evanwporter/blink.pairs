@@ -5,7 +5,7 @@
 --- @field mate integer[] { zero-based line number, zero-based byte column }
 
 --- @class sv-matchit.Parser
---- @field parse_buffer fun(bufnr: integer, filetype: string, lines: string[]): boolean
+--- @field parse_buffer fun(bufnr: integer, filetype: string, lines: string[], start_line?: integer, old_end_line?: integer): boolean, boolean
 --- @field get_match_at fun(bufnr: integer, row: integer, col: integer): sv-matchit.KeywordMatch?
 
 local project_root = vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':h:h:h')

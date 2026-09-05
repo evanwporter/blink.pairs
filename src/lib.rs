@@ -21,14 +21,29 @@ fn buffers<'a>() -> MutexGuard<'a, HashMap<usize, ParsedBuffer>> {
     }
 }
 
-fn parse_buffer(_lua: &Lua, (bufnr, filetype, lines): (usize, String, Vec<String>)) -> LuaResult<bool> {
+fn parse_buffer(
+    _lua: &Lua,
+    (bufnr, filetype, lines, start_line, old_end_line): (
+        usize,
+        String,
+        Vec<String>,
+        Option<usize>,
+        Option<usize>,
+    ),
+) -> LuaResult<(bool, bool)> {
     if !ParsedBuffer::supports_filetype(&filetype) {
         buffers().remove(&bufnr);
-        return Ok(false);
+        return Ok((false, false));
     }
     let lines = lines.iter().map(String::as_str).collect::<Vec<_>>();
-    buffers().insert(bufnr, ParsedBuffer::parse(&lines));
-    Ok(true)
+    let mut buffers = buffers();
+    if let (Some(start_line), Some(old_end_line), Some(parsed)) =
+        (start_line, old_end_line, buffers.get_mut(&bufnr))
+    {
+        return Ok((true, parsed.reparse_range(&lines, start_line, old_end_line)));
+    }
+    buffers.insert(bufnr, ParsedBuffer::parse(&lines));
+    Ok((true, false))
 }
 
 fn get_match_at(

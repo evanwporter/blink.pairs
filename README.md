@@ -6,10 +6,15 @@ Native `%` matching for SystemVerilog block keywords in Neovim.
 | --- | --- |
 | `begin` | `end` |
 | `module` | `endmodule` |
-| `function` | `endfunction` |
+| `function` / `task` | `endfunction` / `endtask` |
+| `class`, `package`, `interface`, `program`, `checker`, `primitive` | their `end…` keyword |
+| `generate`, `clocking`, `property`, `sequence`, `specify`, `covergroup`, `config` | their `end…` keyword |
+| `case`, `casex`, `casez`, `randcase` | `endcase` |
+| `fork` | `join`, `join_any`, `join_none` |
 
 Keywords in comments, strings, escaped identifiers, and longer identifiers are
-ignored. The buffer is reparsed after each edit; `%` jumps to the matching
+ignored. On an edit, only the changed line range is retokenized; a full reparse
+is used only when a block-comment boundary changes. `%` jumps to the matching
 keyword when the cursor is on one, and otherwise retains Neovim's normal `%`
 behavior.
 
