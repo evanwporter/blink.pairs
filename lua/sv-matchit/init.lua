@@ -26,7 +26,7 @@ function M.setup()
     pattern = { 'systemverilog', 'verilog' },
     callback = function(event)
       require('sv-matchit.watcher').attach(event.buf)
-      vim.keymap.set('n', '%', jump_to_match, {
+      vim.keymap.set({ 'n', 'x' }, '%', jump_to_match, {
         buffer = event.buf,
         silent = true,
         desc = 'Jump to matching SystemVerilog keyword',
@@ -37,7 +37,7 @@ function M.setup()
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if vim.bo[bufnr].filetype == 'systemverilog' or vim.bo[bufnr].filetype == 'verilog' then
       require('sv-matchit.watcher').attach(bufnr)
-      vim.keymap.set('n', '%', jump_to_match, { buffer = bufnr, silent = true })
+      vim.keymap.set({ 'n', 'x' }, '%', jump_to_match, { buffer = bufnr, silent = true })
     end
   end
 end
