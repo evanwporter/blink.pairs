@@ -1,18 +1,18 @@
 local nvim = require('blink.lib.nvim')
 
 local highlighter = {}
-local ns = nvim.create_namespace('blink.pairs')
+local ns = nvim.create_namespace('sv-matchit')
 
---- @param config blink.pairs.HighlightsConfig
+--- @param config sv-matchit.HighlightsConfig
 function highlighter.register(config)
-  --- @type fun(match: blink.pairs.Match): string
+  --- @type fun(match: sv-matchit.Match): string
   --- @diagnostic disable-next-line: assign-type-mismatch
   local get_match_highlight = type(config.groups) == 'function' and config.groups
     or function(match) return config.groups[match.stack_height % #config.groups + 1] end
 
-  local watcher_attach = require('blink.pairs.watcher').attach
-  local get_line_matches = require('blink.pairs.rust').get_line_matches
-  local mappings_config = require('blink.pairs.config').mappings
+  local watcher_attach = require('sv-matchit.watcher').attach
+  local get_line_matches = require('sv-matchit.rust').get_line_matches
+  local mappings_config = require('sv-matchit.config').mappings
 
   local cmdline_enabled = config.cmdline
 
@@ -34,7 +34,7 @@ function highlighter.register(config)
     on_win = function(_, winnr, bufnr, toprow, botrow)
       if
         vim.b[bufnr].pairs == false
-        or vim.b[bufnr].blink_pairs == false
+        or vim.b[bufnr].sv_matchit == false
         or vim.tbl_contains(mappings_config.disabled_filetypes, vim.bo[bufnr].filetype)
       then
         return false
@@ -99,7 +99,7 @@ function highlighter.register(config)
     end,
   })
 
-  if config.matchparen and config.matchparen.enabled then require('blink.pairs.highlight.matchparen').setup(config) end
+  if config.matchparen and config.matchparen.enabled then require('sv-matchit.highlight.matchparen').setup(config) end
 end
 
 return highlighter

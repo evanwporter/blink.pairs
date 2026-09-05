@@ -1,6 +1,6 @@
 [remote.github]
 owner = "saghen"
-repo = "blink.pairs"
+repo = "sv-matchit"
 
 [changelog]
 body = """

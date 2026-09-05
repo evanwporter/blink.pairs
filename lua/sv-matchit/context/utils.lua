@@ -2,7 +2,7 @@ local M = {}
 
 --- Memoize the result of a function for a context with a given key.
 --- @generic T
---- @param ctx blink.pairs.Context
+--- @param ctx sv-matchit.Context
 --- @param key string
 --- @param fn fun():T
 --- @return T

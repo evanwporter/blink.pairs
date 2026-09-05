@@ -1,12 +1,12 @@
---- @class (exact) blink.pairs.HighlightsConfig
+--- @class (exact) sv-matchit.HighlightsConfig
 --- @field enabled boolean
 --- @field cmdline boolean Requires `require('vim._extui').enable({})`
---- @field groups string[] | fun(match: blink.pairs.Match): string Highlight groups for matched pairs, in order that they'll appear based on depth, or a function that returns a highlight group for a given match
+--- @field groups string[] | fun(match: sv-matchit.Match): string Highlight groups for matched pairs, in order that they'll appear based on depth, or a function that returns a highlight group for a given match
 --- @field unmatched_group string Highlight group for unmatched pairs
 --- @field priority number
---- @field matchparen blink.pairs.MatchparenConfig
+--- @field matchparen sv-matchit.MatchparenConfig
 
---- @class (exact) blink.pairs.MatchparenConfig
+--- @class (exact) sv-matchit.MatchparenConfig
 --- @field enabled boolean
 --- @field cmdline boolean Requires `require('vim._extui').enable({})`. Disabled by default due to only showing matchparen when moving the cursor, and not when typing.
 --- @field include_surrounding boolean Also include pairs not on top of the cursor, but surrounding the cursor
@@ -17,8 +17,8 @@ local types = require('blink.lib.config').types
 return {
   enabled = { true, 'boolean' },
   cmdline = { true, 'boolean' },
-  groups = { { 'BlinkPairsOrange', 'BlinkPairsPurple', 'BlinkPairsBlue' }, types.list('string') },
-  unmatched_group = { 'BlinkPairsUnmatched', 'string' },
+  groups = { { 'SvMatchitOrange', 'SvMatchitPurple', 'SvMatchitBlue' }, types.list('string') },
+  unmatched_group = { 'SvMatchitUnmatched', 'string' },
   priority = { 200, 'number' },
   matchparen = {
     enabled = { true, 'boolean' },

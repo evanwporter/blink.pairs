@@ -1,4 +1,4 @@
-use blink_pairs_parser::parser::{parse_filetype, State};
+use sv_matchit::parser::{parse_filetype, State};
 use criterion::{criterion_group, criterion_main, Criterion};
 use std::hint::black_box;
 

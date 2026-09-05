@@ -1,4 +1,4 @@
-local mappings = require('blink.pairs.mappings')
+local mappings = require('sv-matchit.mappings')
 
 local wrap = {}
 
@@ -11,11 +11,11 @@ local registrations = {
   normal_mode_motion_reverse = function(key) wrap.register_normal_mode_motion(key, 'motion_reverse') end,
 }
 
---- @param definitions blink.pairs.WrapDefinitions
+--- @param definitions sv-matchit.WrapDefinitions
 function wrap.register(definitions)
   for key, def in pairs(definitions) do
     if key == 'normal_mode' then
-      --- @cast def table<string, blink.pairs.WrapTypeNormal>
+      --- @cast def table<string, sv-matchit.WrapTypeNormal>
       for normal_mode_key, normal_mode_def in pairs(def) do
         if normal_mode_def ~= nil and normal_mode_def ~= false and normal_mode_def ~= '' then
           local type = normal_mode_def == 'motion' and 'normal_mode_motion'
@@ -30,11 +30,11 @@ function wrap.register(definitions)
   end
 end
 
---- @param definitions blink.pairs.WrapDefinitions
+--- @param definitions sv-matchit.WrapDefinitions
 function wrap.unregister(definitions)
   for key, def in pairs(definitions) do
     if key == 'normal_mode' then
-      --- @cast def table<string, blink.pairs.WrapTypeNormal>
+      --- @cast def table<string, sv-matchit.WrapTypeNormal>
       for normal_mode_key, _ in pairs(def) do
         vim.keymap.del('n', normal_mode_key)
       end
@@ -45,11 +45,11 @@ function wrap.unregister(definitions)
 end
 
 --- @param key string
---- @param type blink.pairs.WrapType
+--- @param type sv-matchit.WrapType
 function wrap.register_motion(key, type)
   vim.keymap.set('i', key, function()
     if not mappings.is_enabled() then return key end
-    local motion = require('blink.pairs.mappings.wrap.motion')
+    local motion = require('sv-matchit.mappings.wrap.motion')
     motion.set_operator_wrap(type)
     return '<C-o>g@'
   end, {
@@ -59,11 +59,11 @@ function wrap.register_motion(key, type)
 end
 
 --- @param key string
---- @param type blink.pairs.WrapType
+--- @param type sv-matchit.WrapType
 function wrap.register_normal_mode_motion(key, type)
   vim.keymap.set('n', key, function()
     if not mappings.is_enabled() then return key end
-    local motion = require('blink.pairs.mappings.wrap.motion')
+    local motion = require('sv-matchit.mappings.wrap.motion')
     motion.set_operator_wrap(type)
     return 'g@'
   end, { expr = true, desc = 'Wrap pair at cursor via motion' })
@@ -72,7 +72,7 @@ end
 --- @param key string
 --- @param direction 'fwd' | 'rev'
 function wrap.register_treesitter(key, direction)
-  local cmd = "<C-g>U<Cmd>lua require('blink.pairs.mappings.wrap.treesitter').wrap('" .. direction .. "')<CR>"
+  local cmd = "<C-g>U<Cmd>lua require('sv-matchit.mappings.wrap.treesitter').wrap('" .. direction .. "')<CR>"
   vim.keymap.set('i', key, function()
     if not mappings.is_enabled() then return key end
     return cmd

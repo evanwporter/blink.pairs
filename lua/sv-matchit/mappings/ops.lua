@@ -1,10 +1,10 @@
-local mappings = require('blink.pairs.mappings')
-local utils = require('blink.pairs.utils')
-local rule_lib = require('blink.pairs.rule')
+local mappings = require('sv-matchit.mappings')
+local utils = require('sv-matchit.utils')
+local rule_lib = require('sv-matchit.rule')
 
 local ops = {}
 
---- @param rule_definitions blink.pairs.RuleDefinitions
+--- @param rule_definitions sv-matchit.RuleDefinitions
 --- @param cmdline boolean
 function ops.register(rule_definitions, cmdline)
   local rules_by_key = rule_lib.parse(rule_definitions)
@@ -24,7 +24,7 @@ function ops.register(rule_definitions, cmdline)
   map('<Space>', ops.space(all_rules))
 end
 
---- @param rule_definitions blink.pairs.RuleDefinitions
+--- @param rule_definitions sv-matchit.RuleDefinitions
 --- @param cmdline boolean
 function ops.unregister(rule_definitions, cmdline)
   local rules_by_key = rule_lib.parse(rule_definitions)
@@ -44,12 +44,12 @@ function ops.unregister(rule_definitions, cmdline)
 end
 
 --- @param key string
---- @param rules blink.pairs.Rule[]
+--- @param rules sv-matchit.Rule[]
 function ops.on_key(key, rules)
   return function()
     if not mappings.is_enabled() then return key end
 
-    local ctx = require('blink.pairs.context').new()
+    local ctx = require('sv-matchit.context').new()
     local active_rules = rule_lib.get_all_active(ctx, rules)
 
     for _, rule in ipairs(active_rules) do
@@ -94,9 +94,9 @@ function ops.shift_keycode(amount)
   return string.rep(non_undo .. '<Left>', -amount)
 end
 
---- @param ctx blink.pairs.Context
+--- @param ctx sv-matchit.Context
 --- @param key string
---- @param rule blink.pairs.Rule
+--- @param rule sv-matchit.Rule
 --- @param offset? number
 function ops.open_pair(ctx, key, rule, offset)
   if not rule.open(ctx) then return key end
@@ -116,9 +116,9 @@ function ops.open_pair(ctx, key, rule, offset)
   return rule.opening:sub(offset or 0) .. rule.closing .. ops.shift_keycode(-#rule.closing)
 end
 
---- @param ctx blink.pairs.Context
+--- @param ctx sv-matchit.Context
 --- @param key string
---- @param rule blink.pairs.Rule
+--- @param rule sv-matchit.Rule
 function ops.close_pair(ctx, key, rule)
   if not rule.close(ctx) then return key end
 
@@ -139,9 +139,9 @@ function ops.close_pair(ctx, key, rule)
   return rule.closing
 end
 
---- @param ctx blink.pairs.Context
+--- @param ctx sv-matchit.Context
 --- @param key string
---- @param rule blink.pairs.Rule
+--- @param rule sv-matchit.Rule
 function ops.open_or_close_pair(ctx, key, rule)
   if not rule.open_or_close(ctx) then return key end
 
@@ -179,9 +179,9 @@ function ops.open_or_close_pair(ctx, key, rule)
   return pair .. pair .. ops.shift_keycode(-#pair)
 end
 
---- @param ctx blink.pairs.Context
---- @param rules blink.pairs.Rule[]
---- @return blink.pairs.Rule?
+--- @param ctx sv-matchit.Context
+--- @param rules sv-matchit.Rule[]
+--- @return sv-matchit.Rule?
 --- @return integer? closing_indent
 function ops.get_multiline_surrounding(ctx, rules)
   if ctx.mode:match('c') or ctx.cursor.row <= 1 or ctx.cursor.col ~= 0 or ctx.line ~= '' then return end
@@ -206,12 +206,12 @@ function ops.get_multiline_surrounding(ctx, rules)
   end
 end
 
---- @param rules blink.pairs.Rule[]
+--- @param rules sv-matchit.Rule[]
 function ops.backspace(rules)
   return function()
     if not mappings.is_enabled() then return '<BS>' end
 
-    local ctx = require('blink.pairs.context').new()
+    local ctx = require('sv-matchit.context').new()
     local multiline_rule, closing_indent = ops.get_multiline_surrounding(ctx, rules)
     if multiline_rule ~= nil then return '<Del>' .. string.rep('<Del>', closing_indent) .. '<BS>' end
     local rule, surrounding_space = rule_lib.get_surrounding(ctx, rules, 'backspace')
@@ -226,13 +226,13 @@ function ops.backspace(rules)
   end
 end
 
---- @param rules blink.pairs.Rule[]
+--- @param rules sv-matchit.Rule[]
 function ops.enter(rules)
   return function()
     -- use <C-]> to expand abbreviations
     if not mappings.is_enabled() then return '<C-]><CR>' end
 
-    local ctx = require('blink.pairs.context').new()
+    local ctx = require('sv-matchit.context').new()
     local rule, surrounding_space = rule_lib.get_surrounding(ctx, rules, 'enter')
     if rule == nil then return '<C-]><CR>' end
 
@@ -246,13 +246,13 @@ function ops.enter(rules)
   end
 end
 
---- @param rules blink.pairs.Rule[]
+--- @param rules sv-matchit.Rule[]
 function ops.space(rules)
   return function()
     -- use <C-]> to expand abbreviations
     if not mappings.is_enabled() then return '<C-]><Space>' end
 
-    local ctx = require('blink.pairs.context').new()
+    local ctx = require('sv-matchit.context').new()
     local rule = rule_lib.get_surrounding(ctx, rules, 'space')
     if rule == nil then return '<C-]><Space>' end
 

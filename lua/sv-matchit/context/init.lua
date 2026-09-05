@@ -1,18 +1,18 @@
---- @class blink.pairs.Context
+--- @class sv-matchit.Context
 --- @field mode string
 --- @field ft string filetype
 --- @field bufnr integer buffer id
 --- @field cursor { row: integer, col: integer } cursor position
 --- @field line string current line contents
---- @field parser blink.pairs.Parser
+--- @field parser sv-matchit.Parser
 --- @field char_under_cursor string character under the cursor
 --- @field prev_non_ws_col integer column of the last non-whitespace character before the cursor
 --- @field is_escaped boolean
---- @field ts blink.pairs.context.Treesitter
+--- @field ts sv-matchit.context.Treesitter
 local Context = {}
 
 --- @private
---- @type table<string, fun(ctx: blink.pairs.Context): ...>
+--- @type table<string, fun(ctx: sv-matchit.Context): ...>
 Context.__field_constructors = {
   char_under_cursor = function(ctx) return ctx.line:sub(ctx.cursor.col, ctx.cursor.col) end,
   prev_non_ws_col = function(ctx)
@@ -47,7 +47,7 @@ Context.__mt = {
 }
 
 --- Extract a substring around the cursor.
---- @param self blink.pairs.Context
+--- @param self sv-matchit.Context
 --- @param start_offset integer
 --- @param end_offset integer
 --- @return string
@@ -57,7 +57,7 @@ end
 
 --- Extract up to `chars` characters immediately before the cursor. If `chars`
 --- is nil, returns text from the beginning of the line up to the cursor.
---- @param self blink.pairs.Context
+--- @param self sv-matchit.Context
 --- @param chars integer?
 --- @return string
 function Context:text_before_cursor(chars)
@@ -66,7 +66,7 @@ end
 
 --- Extract up to `chars` characters immediately after the cursor.
 --- If `chars` is nil, returns text from just after the cursor to the end of the line.
---- @param self blink.pairs.Context
+--- @param self sv-matchit.Context
 --- @param chars integer?
 --- @return string
 function Context:text_after_cursor(chars)
@@ -74,7 +74,7 @@ function Context:text_after_cursor(chars)
 end
 
 --- Checks if the text after the cursor is equal to the given text.
---- @param self blink.pairs.Context
+--- @param self sv-matchit.Context
 --- @param text string
 --- @param ignore_single_space? boolean
 --- @return boolean
@@ -90,7 +90,7 @@ function Context:is_after_cursor(text, ignore_single_space)
 end
 
 --- Checks if the text before the cursor is equal to the given text.
---- @param self blink.pairs.Context
+--- @param self sv-matchit.Context
 --- @param text string
 --- @param ignore_single_space? boolean
 --- @return boolean
@@ -139,7 +139,7 @@ end
 
 local M = {}
 
---- @return blink.pairs.Context
+--- @return sv-matchit.Context
 function M.new()
   local mode = get_mode()
   local cursor = get_cursor(mode)
@@ -150,10 +150,10 @@ function M.new()
     bufnr = bufnr,
     cursor = { row = cursor[1], col = cursor[2] },
     line = get_line(mode),
-    parser = require('blink.pairs.rust'),
+    parser = require('sv-matchit.rust'),
   }
   ---@diagnostic disable-next-line: invisible
-  self.ts = setmetatable({ ctx = self }, require('blink.pairs.context.treesitter').__mt)
+  self.ts = setmetatable({ ctx = self }, require('sv-matchit.context.treesitter').__mt)
   return setmetatable(self, Context.__mt)
 end
 

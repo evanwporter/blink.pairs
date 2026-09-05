@@ -1,8 +1,8 @@
 local nvim = require('blink.lib.nvim')
-local mappings = require('blink.pairs.mappings')
-local rust = require('blink.pairs.rust')
+local mappings = require('sv-matchit.mappings')
+local rust = require('sv-matchit.rust')
 
---- @class blink.pairs.TsWrapState
+--- @class sv-matchit.TsWrapState
 --- @field bufnr integer
 --- @field original_close_row integer
 --- @field original_close_col integer
@@ -12,7 +12,7 @@ local rust = require('blink.pairs.rust')
 --- @field changedtick integer
 
 local treesitter = {
-  --- @type blink.pairs.TsWrapState?
+  --- @type sv-matchit.TsWrapState?
   state = nil,
 }
 
@@ -98,7 +98,7 @@ function treesitter.get_wrap_nodes(bufnr, row, col)
 end
 
 --- @param direction 'fwd' | 'rev'
---- @param ts_state blink.pairs.TsWrapState
+--- @param ts_state sv-matchit.TsWrapState
 function treesitter.wrap_move(direction, ts_state)
   local new_idx
   if direction == 'fwd' then

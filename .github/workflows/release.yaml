@@ -18,34 +18,34 @@ jobs:
           # Glibc 2.21
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            artifact_name: target/x86_64-unknown-linux-gnu/release/libblink_pairs_parser.so
+            artifact_name: target/x86_64-unknown-linux-gnu/release/libsv_matchit.so
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            artifact_name: target/aarch64-unknown-linux-gnu/release/libblink_pairs_parser.so
+            artifact_name: target/aarch64-unknown-linux-gnu/release/libsv_matchit.so
           # Musl 1.2.3
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            artifact_name: target/x86_64-unknown-linux-musl/release/libblink_pairs_parser.so
+            artifact_name: target/x86_64-unknown-linux-musl/release/libsv_matchit.so
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
-            artifact_name: target/aarch64-unknown-linux-musl/release/libblink_pairs_parser.so
+            artifact_name: target/aarch64-unknown-linux-musl/release/libsv_matchit.so
           # Android (Termux)
           - os: ubuntu-latest
             target: aarch64-linux-android
-            artifact_name: target/aarch64-linux-android/release/libblink_pairs_parser.so
+            artifact_name: target/aarch64-linux-android/release/libsv_matchit.so
 
           ## macOS builds
           - os: macos-latest
             target: x86_64-apple-darwin
-            artifact_name: target/x86_64-apple-darwin/release/libblink_pairs_parser.dylib
+            artifact_name: target/x86_64-apple-darwin/release/libsv_matchit.dylib
           - os: macos-latest
             target: aarch64-apple-darwin
-            artifact_name: target/aarch64-apple-darwin/release/libblink_pairs_parser.dylib
+            artifact_name: target/aarch64-apple-darwin/release/libsv_matchit.dylib
 
           ## Windows builds
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_name: target/x86_64-pc-windows-msvc/release/blink_pairs_parser.dll
+            artifact_name: target/x86_64-pc-windows-msvc/release/sv_matchit.dll
 
     steps:
       - uses: actions/checkout@v6

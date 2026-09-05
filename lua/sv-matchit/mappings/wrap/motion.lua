@@ -1,18 +1,18 @@
 local nvim = require('blink.lib.nvim')
-local rust = require('blink.pairs.rust')
+local rust = require('sv-matchit.rust')
 
 local motions = {}
 
 --- @type [integer, integer]
 local cursor
---- @type blink.pairs.WrapType?
+--- @type sv-matchit.WrapType?
 local wrap_type
 --- @type 'forward' | 'backward' | nil
 local direction
 
 --- @param pos [integer, integer]
 --- @param col_offset? integer
---- @return blink.pairs.MatchWithLine[]?
+--- @return sv-matchit.MatchWithLine[]?
 function motions.get_pair_at(pos, col_offset)
   local bufnr = nvim.get_current_buf()
   return rust.get_surrounding_match_pair(bufnr, pos[1] - 1, math.max(pos[2] + (col_offset or 0), 0))
@@ -20,19 +20,19 @@ end
 
 --- Perform setup for the wrap operator, getting the cursor position, storing options
 --- and clearing state for dot-repeat
---- @param type blink.pairs.WrapType
+--- @param type sv-matchit.WrapType
 function motions.set_operator_wrap(type)
   cursor = nvim.win_get_cursor(0)
   cursor[2] = math.max(0, cursor[2] - 1)
   wrap_type = type
   direction = nil
 
-  vim.o.operatorfunc = 'v:lua.blink_pairs_wrap'
+  vim.o.operatorfunc = 'v:lua.sv_matchit_wrap'
 end
 
 -- Must be a _G global because vim's operatorfunc requires v:lua.<name>
 -- Forward wrap operator: moves pair character at start_pos to motion end
-_G.blink_pairs_wrap = function()
+_G.sv_matchit_wrap = function()
   -- called without calling `motions.set_operator_wrap` first
   if not wrap_type or not cursor then return end
 

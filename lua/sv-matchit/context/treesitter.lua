@@ -1,5 +1,5 @@
---- @class blink.pairs.context.Treesitter
---- @field ctx blink.pairs.Context
+--- @class sv-matchit.context.Treesitter
+--- @field ctx sv-matchit.Context
 --- @field lang string? treesitter language at the context's cursor position
 local TS = {
   --- @private
@@ -47,7 +47,7 @@ local TS = {
 }
 
 --- @private
---- @type table<string, fun(ts: blink.pairs.context.Treesitter): ...>
+--- @type table<string, fun(ts: sv-matchit.context.Treesitter): ...>
 TS.__field_constructors = {
   lang = function(ts)
     local ctx = ts.ctx
@@ -71,19 +71,19 @@ TS.__mt = {
   end,
 }
 
---- @class blink.pairs.context.QueryResult
+--- @class sv-matchit.context.QueryResult
 --- @field parser_found boolean true if a parser exists at the cursor position.
 --- @field matches boolean
 
 --- Search for a treesitter capture at the current position.
---- @param self blink.pairs.context.Treesitter
+--- @param self sv-matchit.context.Treesitter
 --- @param query_name string
 --- @param capture_name string
---- @return blink.pairs.context.QueryResult
+--- @return sv-matchit.context.QueryResult
 function TS:matches_capture(query_name, capture_name)
   local ctx = self.ctx
   local key = ("matches_capture('%s', '%s')"):format(query_name, capture_name)
-  return require('blink.pairs.context.utils').memoize(ctx, key, function()
+  return require('sv-matchit.context.utils').memoize(ctx, key, function()
     local ok, parser = pcall(vim.treesitter.get_parser, ctx.bufnr)
     if not ok or not parser then return { parser_found = false, matches = false } end
 
@@ -100,7 +100,7 @@ function TS:matches_capture(query_name, capture_name)
       local root_row_start, _, root_row_end, _ = root:range()
       if root_row_start > row or root_row_end < row then return end
 
-      local query = vim.treesitter.query.get(ltree:lang(), 'blink.pairs.' .. query_name)
+      local query = vim.treesitter.query.get(ltree:lang(), 'sv-matchit.' .. query_name)
       if not query then return end
 
       for id, node in query:iter_captures(root, 0, row, row + 1) do
@@ -122,29 +122,29 @@ function TS:matches_capture(query_name, capture_name)
   end)
 end
 
---- Return a `blink.pairs.context.QueryResult` indicating whether the “pair”
+--- Return a `sv-matchit.context.QueryResult` indicating whether the “pair”
 --- capture matches at the current Treesitter node.
 ---
 --- This implements a whitelist. Only positions with an explicit “pair” capture
 --- pass: `matches` is true only if `parser_found` is true and at least one
 --- “pair” capture was found.
---- @param self blink.pairs.context.Treesitter
+--- @param self sv-matchit.context.Treesitter
 --- @param query_name string
---- @return blink.pairs.context.QueryResult
+--- @return sv-matchit.context.QueryResult
 function TS:whitelist(query_name)
   local result = self:matches_capture(query_name, 'pair')
   return { parser_found = result.parser_found, matches = result.parser_found and result.matches }
 end
 
---- Return a `blink.pairs.context.QueryResult` indicating whether the “nopair”
+--- Return a `sv-matchit.context.QueryResult` indicating whether the “nopair”
 --- capture does *not* match at the current Treesitter node.
 ---
 --- This implements a blacklist. Positions with a “nopair” capture are
 --- excluded: `matches` is true if either no parser is found or the “nopair”
 --- capture yields no matches.
---- @param self blink.pairs.context.Treesitter
+--- @param self sv-matchit.context.Treesitter
 --- @param query_name string
---- @return blink.pairs.context.QueryResult
+--- @return sv-matchit.context.QueryResult
 function TS:blacklist(query_name)
   local result = self:matches_capture(query_name, 'nopair')
   return { parser_found = result.parser_found, matches = not (result.parser_found and result.matches) }
@@ -233,7 +233,7 @@ end
 --- is normalized to both representations and checked agains the current parser
 --- or filetype.
 ---
---- @param self blink.pairs.context.Treesitter
+--- @param self sv-matchit.context.Treesitter
 --- @param langs string | string[]
 function TS:is_language(langs)
   langs = type(langs) == 'table' and langs or { langs }

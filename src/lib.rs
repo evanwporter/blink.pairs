@@ -153,7 +153,7 @@ fn get_unterminated_opening_after(
 // NOTE: skip_memory_check greatly improves performance
 // https://github.com/mlua-rs/mlua/issues/318
 #[mlua::lua_module(skip_memory_check)]
-fn blink_pairs_parser(lua: &Lua) -> LuaResult<LuaTable> {
+fn sv_matchit(lua: &Lua) -> LuaResult<LuaTable> {
     // panics throw a lua error, add a hook so we don't also println them
     std::panic::set_hook(Box::new(|_| {}));
 

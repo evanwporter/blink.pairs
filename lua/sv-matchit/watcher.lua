@@ -1,4 +1,4 @@
-local utils = require('blink.pairs.utils')
+local utils = require('sv-matchit.utils')
 
 local watcher = {
   --- @type table<number, boolean>
@@ -16,7 +16,7 @@ local watcher = {
 --- @return boolean did_parse
 local function parse_buffer(bufnr, start_line, old_end_line, new_end_line)
   local start_time = vim.uv.hrtime()
-  local rust = require('blink.pairs.rust')
+  local rust = require('sv-matchit.rust')
 
   local lines = vim.api.nvim_buf_get_lines(bufnr, start_line or 0, new_end_line or -1, false)
 
@@ -30,7 +30,7 @@ local function parse_buffer(bufnr, start_line, old_end_line, new_end_line)
     local treesitter_lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
     if not treesitter_lang then return false end
 
-    local treesitter = require('blink.pairs.context.treesitter')
+    local treesitter = require('sv-matchit.context.treesitter')
     local filetypes = treesitter.get_filetypes(treesitter_lang)
     for _, filetype in ipairs(filetypes) do
       if rust.supports_filetype(filetype) then
@@ -50,8 +50,8 @@ local function parse_buffer(bufnr, start_line, old_end_line, new_end_line)
   -- lines have stale state. trigger a full reparse to fix them
   if did_parse and state_changed and new_end_line then parse_buffer(bufnr) end
 
-  if did_parse and require('blink.pairs.config').debug then
-    require('blink.pairs.logger'):notify(vim.log.levels.INFO, 'parsing time: ' .. (vim.uv.hrtime() - start_time) / 1e6 .. ' ms')
+  if did_parse and require('sv-matchit.config').debug then
+    require('sv-matchit.logger'):notify(vim.log.levels.INFO, 'parsing time: ' .. (vim.uv.hrtime() - start_time) / 1e6 .. ' ms')
   end
 
   return did_parse

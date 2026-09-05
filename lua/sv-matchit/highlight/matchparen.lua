@@ -2,13 +2,13 @@ local nvim = require('blink.lib.nvim')
 
 local M = {}
 
---- @param config blink.pairs.HighlightsConfig
+--- @param config sv-matchit.HighlightsConfig
 function M.setup(config)
   if not (config.matchparen and config.matchparen.enabled) then return end
 
-  local rust = require('blink.pairs.rust')
-  local mappings_config = require('blink.pairs.config').mappings
-  local ns = nvim.create_namespace('blink_pairs_matchparen')
+  local rust = require('sv-matchit.rust')
+  local mappings_config = require('sv-matchit.config').mappings
+  local ns = nvim.create_namespace('sv_matchit_matchparen')
   local last_buf
 
   --- @type vim.api.keyset.events[]
@@ -16,11 +16,11 @@ function M.setup(config)
   if vim.fn.exists('##CursorMovedC') == 1 and config.cmdline then table.insert(autocmds, 'CursorMovedC') end
 
   nvim.create_autocmd(autocmds, {
-    group = nvim.create_augroup('BlinkPairsMatchparen', {}),
+    group = nvim.create_augroup('SvMatchitMatchparen', {}),
     callback = function(ev)
       if
         vim.b.pairs == false
-        or vim.b.blink_pairs == false
+        or vim.b.sv_matchit == false
         or vim.tbl_contains(mappings_config.disabled_filetypes, vim.bo.filetype)
       then
         return
@@ -36,7 +36,7 @@ function M.setup(config)
       end
 
       -- TODO: run this for all the windows
-      local ctx = require('blink.pairs.context').new()
+      local ctx = require('sv-matchit.context').new()
       -- prompt mark (`:`, `/`) is not considered when do parsing
       local prompt_len = (mode:match('c') and 1 or 0)
       local cursor = { ctx.cursor.row, ctx.cursor.col + prompt_len }

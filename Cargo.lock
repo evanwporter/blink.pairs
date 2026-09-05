@@ -45,16 +45,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c8214115b7bf84099f1309324e63141d4c5d7cc26862f97a0a857dbefe165bd"
 
 [[package]]
-name = "blink_pairs_parser"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "matcher-macros",
- "mlua",
- "pretty_assertions",
-]
-
-[[package]]
 name = "bstr"
 version = "1.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -583,6 +573,16 @@ name = "smallvec"
 version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fcf8323ef1faaee30a44a340193b1ac6814fd9b7b4e88e9d4519a3e4abe1cfd"
+
+[[package]]
+name = "sv_matchit"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "matcher-macros",
+ "mlua",
+ "pretty_assertions",
+]
 
 [[package]]
 name = "syn"

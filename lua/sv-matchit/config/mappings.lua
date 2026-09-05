@@ -1,31 +1,31 @@
---- @class (exact) blink.pairs.MappingsConfig
+--- @class (exact) sv-matchit.MappingsConfig
 --- @field enabled boolean
 --- @field cmdline boolean
 --- @field disabled_filetypes string[]
---- @field wrap blink.pairs.WrapDefinitions
---- @field pairs blink.pairs.RuleDefinitions
+--- @field wrap sv-matchit.WrapDefinitions
+--- @field pairs sv-matchit.RuleDefinitions
 
---- @alias blink.pairs.RuleDefinitions table<string, string | blink.pairs.RuleDefinition | blink.pairs.RuleDefinition[]>
+--- @alias sv-matchit.RuleDefinitions table<string, string | sv-matchit.RuleDefinition | sv-matchit.RuleDefinition[]>
 
---- @alias blink.pairs.WrapType 'motion' | 'motion_reverse' | 'treesitter' | 'treesitter_reverse' | '' | boolean | nil
---- @alias blink.pairs.WrapTypeNormal 'motion' | 'motion_reverse'
+--- @alias sv-matchit.WrapType 'motion' | 'motion_reverse' | 'treesitter' | 'treesitter_reverse' | '' | boolean | nil
+--- @alias sv-matchit.WrapTypeNormal 'motion' | 'motion_reverse'
 
---- @alias blink.pairs.WrapValue blink.pairs.WrapType
---- @alias blink.pairs.WrapDefinitions table<string, blink.pairs.WrapValue> | { normal_mode: table<string, blink.pairs.WrapTypeNormal> }
+--- @alias sv-matchit.WrapValue sv-matchit.WrapType
+--- @alias sv-matchit.WrapDefinitions table<string, sv-matchit.WrapValue> | { normal_mode: table<string, sv-matchit.WrapTypeNormal> }
 
---- @class (exact) blink.pairs.RuleDefinition
+--- @class (exact) sv-matchit.RuleDefinition
 --- @field [1] string Closing character (e.g. { ')' }) or opening character if two characters are provided (e.g. {'(', ')'})
 --- @field [2]? string Closing character (e.g. {'(', ')'})
 --- @field priority? number
 --- @field cmdline? boolean
 --- @field languages? string[]
---- @field when? fun(ctx: blink.pairs.Context): boolean
---- @field open? boolean | fun(ctx: blink.pairs.Context): boolean Whether to open the pair
---- @field close? boolean | fun(ctx: blink.pairs.Context): boolean Whether to close the pair
---- @field open_or_close? boolean | fun(ctx: blink.pairs.Context): boolean Whether to open or close the pair, used in-place of `open` and `close` when the open and close are the same (such as for '' or "")
---- @field enter? boolean | fun(ctx: blink.pairs.Context): boolean
---- @field backspace? boolean | fun(ctx: blink.pairs.Context): boolean
---- @field space? boolean | fun(ctx: blink.pairs.Context): boolean
+--- @field when? fun(ctx: sv-matchit.Context): boolean
+--- @field open? boolean | fun(ctx: sv-matchit.Context): boolean Whether to open the pair
+--- @field close? boolean | fun(ctx: sv-matchit.Context): boolean Whether to close the pair
+--- @field open_or_close? boolean | fun(ctx: sv-matchit.Context): boolean Whether to open or close the pair, used in-place of `open` and `close` when the open and close are the same (such as for '' or "")
+--- @field enter? boolean | fun(ctx: sv-matchit.Context): boolean
+--- @field backspace? boolean | fun(ctx: sv-matchit.Context): boolean
+--- @field space? boolean | fun(ctx: sv-matchit.Context): boolean
 
 local types = require('blink.lib.config').types
 

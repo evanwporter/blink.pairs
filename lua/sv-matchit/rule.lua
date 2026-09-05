@@ -1,19 +1,19 @@
---- @class blink.pairs.Rule
+--- @class sv-matchit.Rule
 --- @field priority number
 --- @field opening string
 --- @field closing string
 --- @field key string
---- @field when fun(ctx: blink.pairs.Context): boolean
---- @field open fun(ctx: blink.pairs.Context): boolean
---- @field close fun(ctx: blink.pairs.Context): boolean
---- @field open_or_close fun(ctx: blink.pairs.Context): boolean
---- @field enter fun(ctx: blink.pairs.Context): boolean
---- @field backspace fun(ctx: blink.pairs.Context): boolean
---- @field space fun(ctx: blink.pairs.Context): boolean
+--- @field when fun(ctx: sv-matchit.Context): boolean
+--- @field open fun(ctx: sv-matchit.Context): boolean
+--- @field close fun(ctx: sv-matchit.Context): boolean
+--- @field open_or_close fun(ctx: sv-matchit.Context): boolean
+--- @field enter fun(ctx: sv-matchit.Context): boolean
+--- @field backspace fun(ctx: sv-matchit.Context): boolean
+--- @field space fun(ctx: sv-matchit.Context): boolean
 
---- @alias blink.pairs.RulesByKey table<string, blink.pairs.Rule[]>
+--- @alias sv-matchit.RulesByKey table<string, sv-matchit.Rule[]>
 
---- @alias blink.pairs.Mode 'open' | 'close' | 'open_or_close' | 'enter' | 'backspace' | 'space'
+--- @alias sv-matchit.Mode 'open' | 'close' | 'open_or_close' | 'enter' | 'backspace' | 'space'
 
 local M = {}
 
@@ -36,20 +36,20 @@ function M.is_in_span(span_name)
   local bufnr = vim.api.nvim_get_current_buf()
   local cursor = vim.api.nvim_win_get_cursor(0)
 
-  local span_at = require('blink.pairs.rust').get_span_at(bufnr, cursor[1] - 1, cursor[2])
+  local span_at = require('sv-matchit.rust').get_span_at(bufnr, cursor[1] - 1, cursor[2])
   return span_at == span_name
 end
 
 --- Takes a table of user friendly rule definitions and converts it to a table of rules
---- @param definitions blink.pairs.RuleDefinitions
---- @return blink.pairs.RulesByKey
+--- @param definitions sv-matchit.RuleDefinitions
+--- @return sv-matchit.RulesByKey
 function M.parse(definitions)
-  --- @type blink.pairs.RulesByKey
+  --- @type sv-matchit.RulesByKey
   local rules = {}
 
   for key, defs in pairs(definitions) do
     if type(defs) ~= 'table' or not vim.islist(defs) then defs = { defs } end
-    --- @cast defs (blink.pairs.RuleDefinition | string)[]
+    --- @cast defs (sv-matchit.RuleDefinition | string)[]
 
     for _, def in ipairs(defs) do
       local rule = M.rule_from_def(key, def)
@@ -75,8 +75,8 @@ function M.parse(definitions)
 end
 
 --- @param key string
---- @param def blink.pairs.RuleDefinition | string
---- @return blink.pairs.Rule
+--- @param def sv-matchit.RuleDefinition | string
+--- @return sv-matchit.Rule
 function M.rule_from_def(key, def)
   if type(def) == 'string' then
     return {
@@ -94,7 +94,7 @@ function M.rule_from_def(key, def)
     }
   end
 
-  --- @param ctx blink.pairs.Context
+  --- @param ctx sv-matchit.Context
   local when = function(ctx)
     if def.cmdline == false and ctx.mode:match('c') then return false end
     if def.languages ~= nil and not ctx.ts:is_language(def.languages) then return false end
@@ -123,7 +123,7 @@ end
 
 --- TODO: only works for single character keys for now
 --- @param key string
---- @param rule blink.pairs.Rule
+--- @param rule sv-matchit.Rule
 --- @return string[]
 function M.closing_keys_from_rule(key, rule)
   if key == rule.closing:sub(1, 1) then return {} end
@@ -131,32 +131,32 @@ function M.closing_keys_from_rule(key, rule)
 end
 
 --- Checks if the rule's conditions mark it as active
---- @param ctx blink.pairs.Context
---- @param rule blink.pairs.Rule
---- @param mode? blink.pairs.Mode
+--- @param ctx sv-matchit.Context
+--- @param rule sv-matchit.Rule
+--- @param mode? sv-matchit.Mode
 --- @return boolean
 function M.is_active(ctx, rule, mode) return rule.when(ctx) and (mode == nil or rule[mode](ctx)) end
 
---- @param ctx blink.pairs.Context
---- @param rules blink.pairs.Rule[]
+--- @param ctx sv-matchit.Context
+--- @param rules sv-matchit.Rule[]
 --- @param mode? 'enter' | 'backspace' | 'space'
---- @return blink.pairs.Rule?
+--- @return sv-matchit.Rule?
 function M.get_active(ctx, rules, mode)
   for _, rule in ipairs(rules) do
     if M.is_active(ctx, rule, mode) then return rule end
   end
 end
 
---- @param ctx blink.pairs.Context
---- @param rules blink.pairs.Rule[]
+--- @param ctx sv-matchit.Context
+--- @param rules sv-matchit.Rule[]
 --- @param mode? 'enter' | 'backspace' | 'space'
---- @return blink.pairs.Rule[]
+--- @return sv-matchit.Rule[]
 function M.get_all_active(ctx, rules, mode)
   return vim.tbl_filter(function(rule) return M.is_active(ctx, rule, mode) end, rules)
 end
 
---- @param rules_by_key blink.pairs.RulesByKey
---- @return blink.pairs.Rule[] rules Sorted by priority
+--- @param rules_by_key sv-matchit.RulesByKey
+--- @return sv-matchit.Rule[] rules Sorted by priority
 function M.get_all(rules_by_key)
   local all_rules = {}
   for _, rules in pairs(rules_by_key) do
@@ -167,10 +167,10 @@ function M.get_all(rules_by_key)
 end
 
 --- Looks on either side of the cursor for existing pairs
---- @param ctx blink.pairs.Context
---- @param rules blink.pairs.Rule[] Must be sorted by priority
---- @param mode? blink.pairs.Mode
---- @return blink.pairs.Rule? rule Rule surrounding the cursor
+--- @param ctx sv-matchit.Context
+--- @param rules sv-matchit.Rule[] Must be sorted by priority
+--- @param mode? sv-matchit.Mode
+--- @return sv-matchit.Rule? rule Rule surrounding the cursor
 --- @return boolean? surrounding_space Whether there's a single space on either side of the cursor
 function M.get_surrounding(ctx, rules, mode)
   local before_cursor = ctx:text_before_cursor()
