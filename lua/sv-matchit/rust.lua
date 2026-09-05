@@ -1,28 +1,19 @@
+--- @class sv-matchit.KeywordMatch
+--- @field word string
+--- @field line integer Zero-based line number
+--- @field col integer Zero-based byte column
+--- @field mate integer[] { zero-based line number, zero-based byte column }
+
 --- @class sv-matchit.Parser
---- @field parse_buffer fun(bufnr: number?, shiftwidth: number, filetype: string, lines: string[], start_line: number?, old_end_line: number?, new_end_line: number?): boolean
---- @field supports_filetype fun(filetype: string): boolean
---- @field get_line_matches fun(bufnr: number, line_number: number, token_type: number?): sv-matchit.Match[]
---- @field get_span_at fun(bufnr: number, row: number, col: number): string?
---- @field get_match_at fun(bufnr: number, row: number, col: number): sv-matchit.Match?
---- @field get_match_pair fun(bufnr: number, row: number, col: number): sv-matchit.MatchWithLine[]?
---- @field get_surrounding_match_pair fun(bufnr: number, row: number, col: number): sv-matchit.MatchWithLine[]?
---- @field get_unmatched_opening_before fun(bufnr: number, opening: string, closing: string, row: number, col: number): sv-matchit.MatchWithLine?
---- @field get_unmatched_closing_after fun(bufnr: number, opening: string, closing: string, row: number, col: number): sv-matchit.MatchWithLine?
---- @field get_unterminated_opening_before fun(bufnr: number, opening: string, row: number, col: number): sv-matchit.MatchWithLine?
---- @field get_unterminated_opening_after fun(bufnr: number, opening: string, row: number, col: number): sv-matchit.MatchWithLine?
+--- @field parse_buffer fun(bufnr: integer, filetype: string, lines: string[]): boolean
+--- @field get_match_at fun(bufnr: integer, row: integer, col: integer): sv-matchit.KeywordMatch?
 
---- @class sv-matchit.Match
---- @field [1] string
---- @field [2] string?
---- @field span string?
---- @field col number
---- @field stack_height number?
+local project_root = vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':h:h:h')
+local sysname = vim.uv.os_uname().sysname
+local extension = sysname == 'Darwin' and '.dylib' or (sysname:match('Windows') and '.dll' or '.so')
+local prefix = sysname:match('Windows') and '' or 'lib'
+local library = project_root .. '/target/release/' .. prefix .. 'sv_matchit' .. extension
 
---- @class sv-matchit.MatchWithLine : sv-matchit.Match
---- @field line number
-
-local project_root = vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':h:h:h:h')
-local native = require('blink.lib.native')
---- @type sv-matchit.Parser
-local rust = native.load('sv_matchit', native.try_git_commit(project_root))
-return rust
+local loader, err = package.loadlib(library, 'luaopen_sv_matchit')
+if not loader then error(('sv-matchit could not load %s; run `cargo build --release`: %s'):format(library, err)) end
+return loader()

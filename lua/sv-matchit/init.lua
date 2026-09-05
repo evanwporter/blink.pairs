@@ -1,37 +1,45 @@
-local pairs = {}
+local M = {}
 
-local success, err = pcall(require, 'blink.lib')
-if not success then error('sv-matchit requires blink.lib ("saghen/blink.lib"): ' .. err) end
-
-local native = require('blink.lib.native.managed').new({
-  module_name = 'sv-matchit',
-  library_name = 'sv_matchit',
-  current_file_path = debug.getinfo(1, 'S').source:sub(2),
-  logger = require('sv-matchit.logger'),
-})
-
---- Enable SystemVerilog keyword matching.
---- @param opts? { enabled?: boolean }
-function pairs.setup(opts)
-  if not native:library_available() then
-    error('sv-matchit native library is unavailable; run require("sv-matchit").build() before setup()')
+local function jump_to_match()
+  local bufnr = vim.api.nvim_get_current_buf()
+  if not require('sv-matchit.watcher').attach(bufnr) then
+    vim.cmd('normal! %')
+    return
   end
-  require('sv-matchit.native_keyword').setup(opts)
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local match = require('sv-matchit.rust').get_match_at(bufnr, cursor[1] - 1, cursor[2])
+  if not match then
+    vim.cmd('normal! %')
+    return
+  end
+
+  vim.api.nvim_win_set_cursor(0, { match.mate[1] + 1, match.mate[2] })
 end
 
-function pairs.library_available() return native:library_available() end
-
-function pairs.build(opts)
-  return native:build(
-    { 'cargo', 'build', '--release' },
-    function(repo_root, platform)
-      return {
-        repo_root .. '/target/release/libsv_matchit' .. platform.lib_extension,
-        repo_root .. '/target/release/sv_matchit' .. platform.lib_extension,
-      }
+--- Enable SystemVerilog keyword matching. `%` jumps between begin/end,
+--- module/endmodule, and function/endfunction.
+function M.setup()
+  local group = vim.api.nvim_create_augroup('SvMatchit', { clear = true })
+  vim.api.nvim_create_autocmd('FileType', {
+    group = group,
+    pattern = { 'systemverilog', 'verilog' },
+    callback = function(event)
+      require('sv-matchit.watcher').attach(event.buf)
+      vim.keymap.set('n', '%', jump_to_match, {
+        buffer = event.buf,
+        silent = true,
+        desc = 'Jump to matching SystemVerilog keyword',
+      })
     end,
-    opts
-  )
+  })
+
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[bufnr].filetype == 'systemverilog' or vim.bo[bufnr].filetype == 'verilog' then
+      require('sv-matchit.watcher').attach(bufnr)
+      vim.keymap.set('n', '%', jump_to_match, { buffer = bufnr, silent = true })
+    end
+  end
 end
 
-return pairs
+return M
