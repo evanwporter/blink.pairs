@@ -6,6 +6,7 @@ use buffer::ParsedBuffer;
 
 pub mod buffer;
 
+/// One parser per buffer
 static PARSED_BUFFERS: LazyLock<Mutex<HashMap<usize, ParsedBuffer>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
