@@ -1,5 +1,5 @@
 {
-  description = "Rainbow highlighting and intelligent auto-pairs for Neovim";
+  description = "SystemVerilog block-keyword matching for Neovim";
 
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
@@ -27,14 +27,14 @@
         overlays = [blink-lib.overlays.default];
       });
 
-    version = "0.6.0";
-    blink-pairs-package = {
+    version = "0.1.0";
+    sv-matchit-package = {
       rustPlatform,
       vimPlugins,
       vimUtils,
     }:
       vimUtils.buildVimPlugin {
-        pname = "blink.pairs";
+        pname = "sv-matchit";
         inherit version;
         src = toSource {
           root = ./.;
@@ -50,20 +50,15 @@
 
         preInstall = ''
           mkdir -p lib
-          ln -s $parser_lib/lib/libblink_pairs_parser.* lib/
+          ln -s $parser_lib/lib/libsv_matchit.* lib/
         '';
 
-        # nvimRequireCheckHook adds the plugin to be tested to the rtp multiple
-        # times. This means blink.lib finds multiple instances of the
-        # library, causing the require checks to fail.
         nvimSkipModules = [
-          "blink.pairs.rust"
-          "blink.pairs.mappings.wrap.motion"
-          "blink.pairs.mappings.wrap.treesitter"
+          "sv-matchit.rust"
         ];
 
         env.parser_lib = rustPlatform.buildRustPackage {
-          pname = "blink-pairs-lib";
+          pname = "sv-matchit-lib";
           inherit version;
           src = toSource {
             root = ./.;
@@ -81,13 +76,13 @@
       };
   in {
     packages = forAllSystems (system: rec {
-      blink-pairs = nixpkgsFor.${system}.callPackage blink-pairs-package {};
-      default = blink-pairs;
+      sv-matchit = nixpkgsFor.${system}.callPackage sv-matchit-package {};
+      default = sv-matchit;
     });
 
     overlays.default = final: prev: {
       vimPlugins = prev.vimPlugins.extend (_: _: {
-        blink-pairs = final.callPackage blink-pairs-package {};
+        sv-matchit = final.callPackage sv-matchit-package {};
       });
     };
 
@@ -97,10 +92,9 @@
         packages = self.packages.${system};
       in {
         default = pkgs.mkShell {
-          name = "blink";
+          name = "sv-matchit";
           inputsFrom = [
-            packages.blink-pairs
-            packages.blink-pairs.parser_lib
+            packages.sv-matchit.parser_lib
           ];
           packages = [pkgs.rust-analyzer];
         };
